@@ -1,4 +1,5 @@
-# Aksenkin IU5-24B
+# Aksenkin IU5-24B Labs
+### Progress
 - [ ] Lab 1
 - [ ] Lab 2
 - [ ] Lab 3
