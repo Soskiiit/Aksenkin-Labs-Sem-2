@@ -1,16 +1,15 @@
 #pragma once
 
-#include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <cstring>
 #include <compare>
-#include <stdexcept>
 
 namespace planets {
     char* readUnlimitedWord(std::istream& input);
 
     class Planet {
+    private:
+        static int total;
+        int id;
     public:
         char* name;
         unsigned int radius;

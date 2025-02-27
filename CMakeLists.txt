@@ -16,3 +16,6 @@ add_executable(${project}
 
 add_subdirectory(planetsdb)
 target_link_libraries(${project} planetsdb)
+
+add_subdirectory(apartmentsdb)
+target_link_libraries(${project} apartmentsdb)

@@ -1,5 +1,10 @@
 #include "planets.h"
 
+#include <algorithm>
+#include <cstring>
+#include <exception>
+#include <iostream>
+
 namespace planets {
     char* readUnlimitedWord(std::istream& input) {
         while (input.good() && std::isspace(input.peek())) {
@@ -38,6 +43,8 @@ namespace planets {
         this->radius = radius;
         this->life = life;
         this->number_of_satellites = number_of_satellites;
+        // id = ++total;
+        // std::cout << "Планета " << id << " создана" << std::endl;
     }
 
     Planet::Planet() {
@@ -47,6 +54,8 @@ namespace planets {
         radius = 0;
         life = false;
         number_of_satellites = 0;
+        // id = ++total;
+        // std::cout << "Планета " << id << " создана" << std::endl;
     }
 
     Planet::Planet(const Planet &planet) {
@@ -55,10 +64,13 @@ namespace planets {
         radius = planet.radius;
         life = planet.life;
         number_of_satellites = planet.number_of_satellites;
+        // id = ++total;
+        // std::cout << "Планета " << id << " создана" << std::endl;
     }
 
     Planet::~Planet() {
         delete[] name;
+        // std::cout << "Планета " << id << " удалена" << std::endl;
     }
 
     Planet& Planet::operator=(const Planet& other) {
@@ -69,6 +81,8 @@ namespace planets {
             radius = other.radius;
             life = other.life;
             number_of_satellites = other.number_of_satellites;
+            // id = ++total;
+            // std::cout << "Планета " << id << "создана" << std::endl;
         }
         return *this;
     }
@@ -125,9 +139,13 @@ namespace planets {
     }
 
     void PlanetsDB::printPlanets() {
+        if (size == 0) {
+            std::cout << "База пуста\n";
+        }
         for (size_t i = 0; i < size; ++i) {
             std::cout << i + 1 << ". " << planets[i] << std::endl;
         }
+        std::cout << std::endl;
     }
 
     void PlanetsDB::addPlanet(Planet planet) {
