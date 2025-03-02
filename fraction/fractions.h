@@ -1,7 +1,9 @@
 #pragma once
+
 #include <climits>
 #include <cmath>
 #include <cstring>
+
 
 namespace frac {
     int gcd(int a, int b) {
@@ -13,18 +15,36 @@ namespace frac {
             long numerator;
             long denominator;
         public:
+            void ReduceAFraction() {
+                int divider = gcd(std::abs(this->numerator), std::abs(this->denominator));
+                this->numerator /= divider;
+                this->denominator /= divider;
+                if (this->denominator < 0) {
+                    this->numerator = -this->numerator;
+                    this->denominator = -this->denominator;
+                }
+            }
+
+            Fraction() {
+                this->numerator = 0;
+                this->denominator = 1;
+            }
+
             Fraction(long numerator, long denominator) {
                 this->numerator = numerator;
                 this->denominator = denominator;
                 if (denominator == 0) {
                     throw std::invalid_argument("denominator cannot be zero");
                 }
-                int divider = gcd(std::abs(numerator), std::abs(denominator));
-                this->numerator /= divider;
-                this->denominator /= divider;
+                ReduceAFraction();
             }
 
             Fraction(long numerator) {
+                this->numerator = numerator;
+                this->denominator = 1;
+            }
+
+            Fraction(int numerator) {
                 this->numerator = numerator;
                 this->denominator = 1;
             }
@@ -47,11 +67,9 @@ namespace frac {
                     throw std::invalid_argument("denominator cannot be zero");
                 }
 
-                int divider = gcd(std::abs(numerator), std::abs(denominator));
-                numerator /= divider;
-                denominator /= divider;
                 this->numerator = numerator;
                 this->denominator = denominator;
+                ReduceAFraction();
             }
 
             Fraction(double value) {
@@ -68,13 +86,23 @@ namespace frac {
                     return;
                 }
 
-                value *= 1'000'000;
+                value *= 1'024 * 1'024;
                 numerator = value;
-                denominator = 1'000'000;
+                denominator = 1'024 * 1'024;
 
-                int divider = gcd(std::abs(numerator), std::abs(denominator));
-                numerator /= divider;
-                denominator /= divider;
+                ReduceAFraction();
+            }
+
+            ;
+
+            friend std::ostream &operator<<(std::ostream &os, const Fraction &fraction) {
+                os << fraction.numerator << "/" << fraction.denominator;
+                return os;
+            }
+
+            friend std::istream &operator>>(std::istream &input, Fraction &fraction) {
+                input >> fraction.numerator >> fraction.denominator;
+                return input;
             }
 
             Fraction operator+(const Fraction &other) const {
@@ -84,9 +112,65 @@ namespace frac {
                 return result;
             }
 
-            friend std::ostream &operator<<(std::ostream &os, const Fraction &fraction) {
-                os << fraction.numerator << "/" << fraction.denominator;
-                return os;
+            friend Fraction operator+(double lhs, const Fraction &rhs) {
+                return Fraction(lhs) + rhs;
+            }
+
+            friend Fraction operator+(int lhs, const Fraction &rhs) {
+                return Fraction(lhs) + rhs;
+            }
+
+            Fraction operator-(const Fraction &other) {
+                long new_numerator = numerator * other.denominator - other.numerator * denominator;
+                long new_denominator = this->denominator * other.denominator;
+                Fraction result(new_numerator, new_denominator);
+                return result;
+            }
+
+            Fraction operator*(const Fraction &other) {
+                long new_numerator = numerator * other.denominator;
+                long new_denominator = this->denominator * other.numerator;
+                Fraction result(new_numerator, new_denominator);
+                return result;
+            }
+
+            Fraction operator/(const Fraction &other) {
+                long new_numerator = numerator * other.denominator;
+                long new_denominator = this->denominator * other.numerator;
+                Fraction result(new_numerator, new_denominator);
+                return result;
+            }
+
+            Fraction operator+=(const Fraction &other) {
+                numerator = numerator * other.denominator + other.numerator * denominator;
+                denominator = denominator * other.denominator;
+                ReduceAFraction();
+                return *this;
+            }
+
+            Fraction operator+=(const long rhs) {
+                return operator+=(Fraction(rhs));
+            }
+
+            Fraction operator-=(const Fraction &other) {
+                numerator = numerator * other.denominator + other.numerator * denominator;
+                denominator = denominator * other.denominator;
+                ReduceAFraction();
+                return *this;
+            }
+
+            Fraction operator*=(const Fraction &other) {
+                numerator = numerator * other.numerator;
+                denominator = denominator * other.denominator;
+                ReduceAFraction();
+                return *this;
+            }
+
+            Fraction operator/=(const Fraction &other) {
+                numerator = numerator * other.denominator;
+                denominator = denominator * other.numerator;
+                ReduceAFraction();
+                return *this;
             }
     };
 }
