@@ -15,14 +15,14 @@ namespace {
         db.printPlanets();
 
         std::cout << "Добавим пару планет" << std::endl;
-        db.addPlanet(planets::Planet("Юпитер", 123456, false, 16));
-        db.addPlanet(planets::Planet("Меркурий", 4878, false, 0));
+        db.addPlanet(planets::Planet(new char[]{"Юпитер"}, 123456, false, 16));
+        db.addPlanet(planets::Planet(new char[]{"Меркурий"}, 4878, false, 0));
 
         std::cout << "Выводим БД" << std::endl;
         db.printPlanets();
 
         std::cout << "Увеличим Юпитер и отсортируем БД" << std::endl;
-        db.editPlanet(0, planets::Planet("Юпитер", 150000, false, 16));
+        db.editPlanet(1, planets::Planet(new char[]{"Юпитер"}, 150000, false, 16));
         db.sortPlanets();
 
         std::cout << "Выводим БД" << std::endl;

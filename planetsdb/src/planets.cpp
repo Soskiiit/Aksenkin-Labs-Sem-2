@@ -167,15 +167,15 @@ namespace planets {
     }
 
     void PlanetsDB::deletePlanet(size_t id) {
-        if (id >= size) throw std::out_of_range("Неверный индекс");
-        for (size_t i = id; i < size - 1; ++i) {
+        if (id >= size || id < 1) throw std::out_of_range("Неверный индекс");
+        for (size_t i = id - 1; i < size - 1; ++i) {
             planets[i] = planets[i + 1];
         }
         --size;
     }
 
     void PlanetsDB::editPlanet(size_t id, Planet planet) {
-        if (id > size) throw std::out_of_range("Неверный индекс");
+        if (id > size || id < 1) throw std::out_of_range("Неверный индекс");
         planets[id - 1] = planet;
     }
 
@@ -205,5 +205,6 @@ namespace planets {
                 break;
             }
         }
+        in.close();
     }
 }
