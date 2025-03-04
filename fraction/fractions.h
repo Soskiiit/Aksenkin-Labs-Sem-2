@@ -10,6 +10,37 @@ namespace frac {
         return b == 0 ? a : gcd(b, a % b);
     }
 
+    char* readUnlimitedWord(std::istream& input) {
+        while (input.good() && std::isspace(input.peek())) {
+            input.get();
+        }
+
+        if (!input.good()) return nullptr;
+
+        size_t bufferSize = 128;
+        char* buffer = new char[bufferSize];
+        size_t index = 0;
+
+        while (input.good() && !std::isspace(input.peek())) {
+            if (index >= bufferSize - 1) {
+                size_t newSize = bufferSize * 2;
+                char* newBuffer = new char[newSize];
+                std::copy(buffer, buffer + bufferSize, newBuffer);
+                delete[] buffer;
+                buffer = newBuffer;
+                bufferSize = newSize;
+            }
+            buffer[index++] = input.get();
+        }
+
+        buffer[index] = '\0';
+        char* trimmedBuffer = new char[index + 1];
+        std::strcpy(trimmedBuffer, buffer);
+        delete[] buffer;
+
+        return trimmedBuffer;
+    }
+
     class Fraction {
         private:
             long numerator;
@@ -49,26 +80,41 @@ namespace frac {
                 this->denominator = 1;
             }
 
-            Fraction(const char* line) {
-                int slash_position = strchr(line, '/') - line;
-                if (slash_position < 1) {
-                    throw std::invalid_argument("Fraction string contains invalid characters");
-                }
-                char* numerator_string = new char[slash_position + 1];
-                char* denominator_string = new char[slash_position + 1];
-                strncpy(numerator_string, line, slash_position);
-                numerator_string[slash_position] = '\0';
-                strncpy(denominator_string, line + 1 + slash_position, slash_position);
-                denominator_string[slash_position] = '\0';
-                int numerator = atoi(numerator_string);
-                int denominator = atoi(denominator_string);
+            Fraction(const char* input_line) {
+                char* line_copy = new char[strlen(input_line) + 1];
+                strcpy(line_copy, input_line);
+                char* part1 = line_copy;
+                char* part2;
+                char* pos = strchr(line_copy, ' ');
 
-                if (denominator == 0) {
-                    throw std::invalid_argument("denominator cannot be zero");
+                if (pos != nullptr) {
+                    *pos = '\0';
+                    part2 = pos + 1;
+                } else {
+                    part2 = nullptr;
                 }
 
-                this->numerator = numerator;
-                this->denominator = denominator;
+                if (part2 == nullptr) {
+                    char* pos = strchr(part1, '/');
+                    if (pos == nullptr) {
+                        numerator = atoi(part1);
+                        denominator = 1;
+                    } else {
+                        *pos = '\0';
+                        numerator = atoi(part1);
+                        denominator = atoi(pos + 1);
+                    }
+                } else {
+                    char* pos = strchr(part2, '/');
+                    if (pos == nullptr) {
+                        numerator = atoi(part2);
+                        denominator = 1;
+                    } else {
+                        *pos = '\0';
+                        numerator = atoi(part2) + atoi(part1);
+                        denominator = atoi(pos + 1);
+                    }
+                }
                 ReduceAFraction();
             }
 
@@ -91,17 +137,31 @@ namespace frac {
                 denominator = 1'024 * 1'024;
 
                 ReduceAFraction();
-            }
-
-            ;
+            };
 
             friend std::ostream &operator<<(std::ostream &os, const Fraction &fraction) {
-                os << fraction.numerator << "/" << fraction.denominator;
+                int integer_part = std::abs(fraction.numerator) / std::abs(fraction.denominator);
+                int fractional_part = std::abs(fraction.numerator) % std::abs(fraction.denominator);
+                if (fraction.numerator < 0) os << '-';
+                if (integer_part > 0) {
+                    os << integer_part;
+                }
+                if (fractional_part > 0) {
+                    if (integer_part > 0) {
+                        os << ' ';
+                    }
+                     os << fractional_part << '/' << fraction.denominator;
+                }
+                if (fraction.numerator == 0)
+                    os << 0;
                 return os;
             }
 
             friend std::istream &operator>>(std::istream &input, Fraction &fraction) {
-                input >> fraction.numerator >> fraction.denominator;
+                char* line = new char[99];
+                input.getline(line, 99);
+                Fraction fraction_temp(line);
+                fraction = fraction_temp;
                 return input;
             }
 
