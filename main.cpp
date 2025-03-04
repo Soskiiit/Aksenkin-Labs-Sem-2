@@ -57,8 +57,12 @@ namespace {
             switch (choice) {
                 case 1:
                     std::cout << "Введите название, площадь, цену и доступна/забронирована(0/1)" << std::endl;
-                    std::cin >> apartment;
-                    db.addApartment(apartment);
+                    try {
+                        std::cin >> apartment;
+                        db.addApartment(apartment);
+                    } catch (const std::exception &e) {
+                        std::cout << e.what() << std::endl;
+                    }
                     break;
                 case 2:
                     std::cout << "Введите id: ";
@@ -76,7 +80,7 @@ namespace {
                     std::cin >> apartment;
                     try {
                         db.editApartment(id, apartment);
-                    } catch (const std::out_of_range e) {
+                    } catch (const std::exception e) {
                         std::cout << e.what() << std::endl;
                     }
                     break;
@@ -88,9 +92,11 @@ namespace {
                 case 5:
                     db.writeApartments();
                     std::cout << "База записана в файл apartments.txt" << std::endl;
+                    break;
                 case 6:
                     db.readApartments();
                     std::cout << "База прочтена из файла apartments.txt" << std::endl;
+                    break;
                 case 7:
                     db.sortApartments();
                     std::cout << "Значения отсортированы" << std::endl;

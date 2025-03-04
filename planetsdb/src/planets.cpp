@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cstring>
-#include <exception>
 #include <iostream>
 
 namespace planets {
@@ -114,15 +113,23 @@ namespace planets {
     std::istream& operator>>(std::istream& input_stream, Planet& planet) {
         if (!input_stream.good()) return input_stream;
 
-        planet.name = readUnlimitedWord(input_stream);
-        planet.radius = static_cast<unsigned int>(std::stoul(readUnlimitedWord(input_stream)));
-        planet.number_of_satellites = static_cast<unsigned int>(std::stoul(readUnlimitedWord(input_stream)));
-        planet.life = static_cast<bool>(std::stoi(readUnlimitedWord(input_stream)));
+        char* name = readUnlimitedWord(input_stream);
+        int radius = static_cast<unsigned int>(std::stoul(readUnlimitedWord(input_stream)));
+        int number_of_satellites = static_cast<unsigned int>(std::stoul(readUnlimitedWord(input_stream)));
+        int life_value = std::stoi(readUnlimitedWord(input_stream));
+        if (life_value != 0 && life_value != 1) {
+            std::cout << "Жизнь определяется 0 или 1" << std::endl;
+        } else {
+            planet.name = name;
+            planet.radius = radius;
+            planet.life = static_cast<bool>(life_value);
+            planet.number_of_satellites = number_of_satellites;
+        }
 
         return input_stream;
     }
 
-    std::ofstream& operator<<(std::ofstream &out, Planet &planet) {
+    std::ofstream& operator<<(std::ofstream& out, Planet& planet) {
         out << planet.name << ' ' << planet.radius << ' '
             << planet.number_of_satellites << ' ' << planet.life << '\n';
         return out;
@@ -168,12 +175,15 @@ namespace planets {
     }
 
     void PlanetsDB::editPlanet(size_t id, Planet planet) {
-        if (id >= size) throw std::out_of_range("Неверный индекс");
-        planets[id] = planet;
+        if (id > size) throw std::out_of_range("Неверный индекс");
+        planets[id - 1] = planet;
     }
 
     void PlanetsDB::sortPlanets() {
-        std::sort(planets, planets + size);
+        if (size == 0)
+            std::cout << "База пуста, сортировка невозможна" << std::endl;
+        else
+            std::sort(planets, planets + size);
     }
 
     void PlanetsDB::writePlanets(char* filename) {
@@ -181,6 +191,7 @@ namespace planets {
         for (size_t i = 0; i < size; ++i) {
             out << planets[i];
         }
+        out.close();
     }
 
     void PlanetsDB::readPlanets(char* filename) {

@@ -104,10 +104,17 @@ namespace apartments {
     std::istream& operator>>(std::istream& input_stream, Apartment& apartment) {
         if (!input_stream.good()) return input_stream;
 
-        apartment.name = readUnlimitedWord(input_stream);
-        apartment.area = static_cast<unsigned int>(std::stoul(readUnlimitedWord(input_stream)));
-        apartment.price = static_cast<unsigned int>(std::stoul(readUnlimitedWord(input_stream)));
-        apartment.reserved = static_cast<bool>(std::stoi(readUnlimitedWord(input_stream)));
+        char* name = readUnlimitedWord(input_stream);
+        unsigned int area = static_cast<unsigned int>(std::stoul(readUnlimitedWord(input_stream)));
+        int price = static_cast<unsigned int>(std::stoul(readUnlimitedWord(input_stream)));
+        int reserved_value = std::stoi(readUnlimitedWord(input_stream));
+        if (reserved_value != 0 && reserved_value != 1)
+            throw std::invalid_argument("Бронь определяется 0 или 1");
+
+        apartment.name = name;
+        apartment.area = area;
+        apartment.price = price;
+        apartment.reserved = static_cast<bool>(reserved_value);
 
         return input_stream;
     }
@@ -146,20 +153,23 @@ namespace apartments {
     }
 
     void ApartmentsDB::deleteApartment(size_t id) {
-        if (id >= size) throw std::out_of_range("Неверный индекс");
-        for (size_t i = id; i < size - 1; ++i) {
+        if (id > size || id < 1) throw std::out_of_range("Неверный индекс");
+        for (size_t i = id - 1; i < size - 1; ++i) {
             apartments[i] = apartments[i + 1];
         }
         --size;
     }
 
     void ApartmentsDB::editApartment(size_t id, Apartment apartment) {
-        if (id >= size) throw std::out_of_range("Неверный индекс");
-        apartments[id] = apartment;
+        if (id > size || id < 1) throw std::out_of_range("Неверный индекс");
+        apartments[id - 1] = apartment;
     }
 
     void ApartmentsDB::sortApartments() {
-        std::sort(apartments, apartments + size);
+        if (size == 0)
+            std::cout << "База пуста, сортировка невозможна" << std::endl;
+        else
+            std::sort(apartments, apartments + size);
     }
 
     void ApartmentsDB::writeApartments(char* filename) {
@@ -167,6 +177,7 @@ namespace apartments {
         for (size_t i = 0; i < size; ++i) {
             out << apartments[i];
         }
+        out.close();
     }
 
     void ApartmentsDB::readApartments(char* filename) {
