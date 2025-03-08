@@ -10,7 +10,7 @@ namespace stk {
         ListNode *next;
 
     public:
-        ListNode(void) {
+        ListNode() {
             next = nullptr;
         }
 
@@ -24,32 +24,86 @@ namespace stk {
             this->next = next;
         }
 
+        ListNode(const ListNode &other) {
+            this->value = other.value;
+            this->next = other.next;
+        }
+
+        ListNode &operator=(const ListNode &other) {
+            this->value = other.value;
+            this->next = other.next;
+            return *this;
+        }
+
         friend FRIEND;
     };
 
     template<class T>
     class Stack {
         typedef class ListNode<T, Stack<T>> Node;
-        Node *top;
+        Node* top;
     public:
-        Stack(void) {
+        Stack() {
             top = nullptr;
         }
-        ~Stack(void) {
-            while (top != nullptr) {
-                Pop();
+
+        Stack(Stack<T> &other) {
+            top = nullptr;
+            if (other.top == nullptr) return;
+            top = new Node(*other.top);
+
+            Node* this_ptr = top;
+            Node* other_ptr = other.top;
+            while (other_ptr != nullptr) {
+                if (other_ptr->next == nullptr) {
+                    this_ptr->next = nullptr;
+                } else {
+                    this_ptr->next = new Node(*other_ptr->next);
+                }
+                this_ptr = this_ptr->next;
+                other_ptr = other_ptr->next;
             }
         }
-        bool IsEmpty(void) {
+
+        Stack operator= (Stack<T> &other) {
+            while (top != nullptr)
+                Pop();
+
+            top = nullptr;
+            if (other.top == nullptr) return *this;
+            top = new Node(*other.top);
+
+            Node* this_ptr = top;
+            Node* other_ptr = other.top;
+            while (other_ptr != nullptr) {
+                if (other_ptr->next == nullptr) {
+                    this_ptr->next = nullptr;
+                } else {
+                    this_ptr->next = new Node(*other_ptr->next);
+                }
+                this_ptr = this_ptr->next;
+                other_ptr = other_ptr->next;
+            }
+            return *this;
+        }
+
+        ~Stack() {
+            while (top != nullptr)
+                Pop();
+        }
+
+        bool IsEmpty() {
             if (top == nullptr)
                 return true;
             return false;
         }
+
         void Push(T n) {
             Node *newNode = new Node(n, top);
             top = newNode;
         }
-        T Pop(void) {
+
+        T Pop() {
             if (top == nullptr)
                 throw std::out_of_range("Stack is empty");
             Node* old_top = top;
@@ -58,7 +112,8 @@ namespace stk {
             delete old_top;
             return value;
         }
-        T TopValue(void) {
+
+        T TopValue() {
             if (top == nullptr)
                 throw std::out_of_range("Stack is empty");
             return top->value;
