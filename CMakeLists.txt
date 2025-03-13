@@ -7,8 +7,8 @@ set(PROJECT_SOURCES
 )
 
 set(PROJECT_HEADERS
-        include/vector.h
-        include/set.h
+        mylibs/vector.h
+        mylibs/set.h
 )
 
 add_executable(lab_5
@@ -16,4 +16,8 @@ add_executable(lab_5
         ${PROJECT_HEADERS}
 )
 
-target_include_directories(lab_5 PRIVATE include)
+add_subdirectory(mylibs)
+target_link_libraries(lab_5 myset)
+target_link_libraries(lab_5 myvector)
+
+target_include_directories(lab_5 PRIVATE mylibs)
