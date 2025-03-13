@@ -29,8 +29,10 @@ namespace set {
                     l = m + 1;
                 }
             }
-            insert_at_pos(l, element);
-            this->size++;
+            if (element != this->data[r]) {
+                insert_at_pos(l, element);
+                this->size++;
+            }
         }
 
         void print() {
@@ -50,7 +52,7 @@ namespace set {
             this->size--;
         }
 
-        bool contains(T element) {
+        int index_of(T element) {
             int l = 0;
             int r = this->size;
             while (l < r) {
@@ -63,9 +65,88 @@ namespace set {
                 }
             }
             if (element == this->data[r]) {
-                return true;
+                return r;
             }
-            return false;
+            return -1;
+        }
+
+        void remove_element(T element) {
+            int index = index_of(element);
+            if (index != -1)
+                delete_at_pos(index);
+        }
+
+        bool contains(T element) {
+            if (index_of(element) == -1)
+                return false;
+            return true;
+        }
+
+        Set operator+=(T element) {
+            add_element(element);
+            return *this;
+        }
+
+        Set operator-=(T element) {
+            remove_element(element);
+            return *this;
+        }
+
+        Set operator+=(Set& other) {
+            for (size_t i = 0; i < other.size; i++) {
+                this->add_element(other.data[i]);
+            }
+            return *this;
+        }
+
+        Set operator-=(Set& other) {
+            for (size_t i = 0; i < other.size; i++) {
+                this->remove_element(other.data[i]);
+            }
+            return *this;
+        }
+
+        Set operator*=(Set& other) {
+            for (size_t i = 0; i < this->size; i++) {
+                if (!other.contains(this->data[i])) {
+                    this->delete_at_pos(i);
+                    i--;
+                }
+            }
+            return *this;
+        }
+
+        friend Set operator+(Set& a, Set& b) {
+            Set result = a;
+            for (size_t i = 0; i < b.size; i++) {
+                result.add_element(b.data[i]);
+            }
+            return result;
+        }
+
+        friend Set operator-(Set& a, Set& b) {
+            Set result = a;
+            for (size_t i = 0; i < b.size; i++) {
+                result.remove(b.data[i]);
+            }
+            return result;
+        }
+
+        friend Set operator*(Set& a, Set& b) {
+            Set result = a;
+            for (size_t i = 0; i < a.size; i++)
+                if (!b.contains(a.data[i]))
+                    result.remove(a.data[i]);
+            return result;
+        }
+
+        friend bool operator==(Set& a, Set& b) {
+            if (a.size != b.size)
+                return false;
+            for (size_t i = 0; i < a.size; i++)
+                if (a.data[i] != b.data[i])
+                    return false;
+            return true;
         }
     };
 }

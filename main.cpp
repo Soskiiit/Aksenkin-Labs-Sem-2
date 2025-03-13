@@ -7,10 +7,11 @@ int main() {
     integer_set.add_element(1);
     integer_set.add_element(2);
     integer_set.add_element(3);
-    integer_set.add_element(-5);
-    integer_set.add_element(2);
-    integer_set.add_element(0);
-    integer_set.delete_at_pos(3);
+    set::Set<int> integer_set_2;
+    integer_set_2.add_element(3);
+    integer_set_2.add_element(4);
+    integer_set_2.add_element(5);
+    integer_set -= integer_set_2;
     integer_set.print();
     return 0;
 }
