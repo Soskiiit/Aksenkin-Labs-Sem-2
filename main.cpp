@@ -1,5 +1,7 @@
+#include <cstring>
 #include <iostream>
 #include <iomanip>
+
 #include "fractions.h"
 
 
