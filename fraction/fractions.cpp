@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <cmath>
+#include <errno.h>
 #include <iostream>
 #include <numeric>
 
@@ -15,6 +16,10 @@ namespace frac {
         int divider = std::gcd(std::abs(numerator), std::abs(denominator));
         numerator /= divider;
         denominator /= divider;
+
+        if (denominator == 0)
+            throw std::invalid_argument("denominator cannot be zero");
+
         if (denominator < 0) {
             numerator = -numerator;
             denominator = -denominator;
@@ -88,6 +93,11 @@ namespace frac {
                     numerator = atoi(part1) * atoi(pos + 1) - atoi(part2);;
                 denominator = atoi(pos + 1);
             }
+        }
+        if (denominator == 0)
+            throw std::invalid_argument("denominator cannot be zero");
+        if (errno == ERANGE) {
+            throw std::out_of_range("overflow");
         }
         delete[] line_copy;
         ReduceAFraction();
