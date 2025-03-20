@@ -11,37 +11,6 @@ namespace frac {
         return b == 0 ? a : gcd(b, a % b);
     }
 
-    char* readUnlimitedWord(std::istream& input) {
-        while (input.good() && std::isspace(input.peek())) {
-            input.get();
-        }
-
-        if (!input.good()) return nullptr;
-
-        size_t bufferSize = 128;
-        char* buffer = new char[bufferSize];
-        size_t index = 0;
-
-        while (input.good() && !std::isspace(input.peek())) {
-            if (index >= bufferSize - 1) {
-                size_t newSize = bufferSize * 2;
-                char* newBuffer = new char[newSize];
-                std::copy(buffer, buffer + bufferSize, newBuffer);
-                delete[] buffer;
-                buffer = newBuffer;
-                bufferSize = newSize;
-            }
-            buffer[index++] = input.get();
-        }
-
-        buffer[index] = '\0';
-        char* trimmedBuffer = new char[index + 1];
-        std::strcpy(trimmedBuffer, buffer);
-        delete[] buffer;
-
-        return trimmedBuffer;
-    }
-
     void Fraction::ReduceAFraction() {
         int divider = std::gcd(std::abs(numerator), std::abs(denominator));
         numerator /= divider;
@@ -63,8 +32,30 @@ namespace frac {
     Fraction::Fraction(int numerator) : numerator(numerator), denominator(1) {}
 
     Fraction::Fraction(const char* input_line) {
+        int start_of_line = 0;
+        int end_of_line = 0;
+        for (int i = 0; input_line[i] != '\0'; i++) {
+            if (input_line[i] != ' ') {
+                start_of_line = i;
+                break;
+            }
+        }
+
+
+        for (int i = strlen(input_line) - 1; input_line[i] > 0; i--) {
+            if (!isspace(input_line[i])) {
+                end_of_line = i;
+                break;
+            }
+        }
+
         char* line_copy = new char[strlen(input_line) + 1];
-        strcpy(line_copy, input_line);
+
+        for (int i = start_of_line; i < end_of_line + 1; i++) {
+            line_copy[i - start_of_line] = input_line[i];
+        }
+        line_copy[end_of_line - start_of_line + 1] = '\0';
+
         char* part1 = line_copy;
         char* part2 = nullptr;
         char* pos = strchr(line_copy, ' ');
@@ -91,7 +82,10 @@ namespace frac {
                 denominator = 1;
             } else {
                 *pos = '\0';
-                numerator = atoi(part2) + atoi(part1);
+                if (part1[0] != '-')
+                    numerator = atoi(part1) * atoi(pos + 1) + atoi(part2);
+                else
+                    numerator = atoi(part1) * atoi(pos + 1) - atoi(part2);;
                 denominator = atoi(pos + 1);
             }
         }
@@ -130,8 +124,8 @@ namespace frac {
     }
 
     std::istream& operator>>(std::istream& input, Fraction& fraction) {
-        char line[100];
-        input.getline(line, 100);
+        char line[1000];
+        input.getline(line, 1000);
         Fraction temp(line);
         fraction = temp;
         return input;
