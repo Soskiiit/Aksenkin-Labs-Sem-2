@@ -60,6 +60,11 @@ namespace frac {
             line_copy[i - start_of_line] = input_line[i];
         }
         line_copy[end_of_line - start_of_line + 1] = '\0';
+        for (int i = start_of_line; line_copy[i] != '\0'; i++) {
+            if (!isdigit(line_copy[i]) && line_copy[i] != '/' && line_copy[i] != ' ' && line_copy[i] != '-') {
+                throw std::invalid_argument("Fraction contains invalid characters");
+            }
+        }
 
         char* part1 = line_copy;
         char* part2 = nullptr;
@@ -87,11 +92,18 @@ namespace frac {
                 denominator = 1;
             } else {
                 *pos = '\0';
+                if (atoi(part2) < 0) {
+                    throw std::invalid_argument("Fraction minus in invalid pos");
+                }
                 if (part1[0] != '-')
                     numerator = atoi(part1) * atoi(pos + 1) + atoi(part2);
                 else
-                    numerator = atoi(part1) * atoi(pos + 1) - atoi(part2);;
+                    numerator = atoi(part1) * atoi(pos + 1) - atoi(part2);
+                if (atoi(pos + 1) < 0) {
+                    throw std::invalid_argument("Fraction minus in invalid pos");
+                }
                 denominator = atoi(pos + 1);
+
             }
         }
         if (denominator == 0)
