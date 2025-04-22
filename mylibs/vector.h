@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <ostream>
 #include <stdexcept>
 
 
@@ -81,6 +82,12 @@ namespace vector {
                 std::copy_n(other.data, size, data);
             }
             return *this;
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const Vector& vector) {
+            for (size_t i = 0; i < vector.size; i++)
+                os << vector.data[i] << " ";
+            return os;
         }
     };
 }

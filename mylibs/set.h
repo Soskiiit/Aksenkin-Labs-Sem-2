@@ -148,5 +148,11 @@ namespace set {
                     return false;
             return true;
         }
+
+        friend std::ostream& operator<<(std::ostream& os, const Set& vector) {
+            for (size_t i = 0; i < vector.size; i++)
+                os << vector.data[i] << " ";
+            return os;
+        }
     };
 }
