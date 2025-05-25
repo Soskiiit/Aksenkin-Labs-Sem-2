@@ -3,10 +3,11 @@
 #include <algorithm>
 #include <ostream>
 #include <stdexcept>
+#include <cstring>
 
 
 namespace vector {
-    template <typename T>
+    template <typename T = const char*>
     class Vector {
     protected:
         T* data;
@@ -17,6 +18,13 @@ namespace vector {
             size = 0;
             capacity = 1;
             data = new T[capacity];
+        }
+
+        Vector(const T& initial_element) {
+            size = 1;
+            capacity = 1;
+            data = new T[capacity];
+            data[0] = initial_element;
         }
 
         virtual ~Vector() {
@@ -44,6 +52,10 @@ namespace vector {
                 resize(capacity);
             }
             data[size++] = value;
+        }
+
+        virtual void add_element(const T& value) {
+            push_back(value);
         }
 
         virtual void delete_element(size_t index) {
@@ -90,4 +102,10 @@ namespace vector {
             return os;
         }
     };
+    
+    // Deduction guides for string literals
+    Vector(const char*) -> Vector<const char*>;
+    
+    // Type alias for string vectors
+    using StringVector = Vector<const char*>;
 }
