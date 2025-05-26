@@ -1,23 +1,10 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.20)
 
-project(lab_5)
-
-set(PROJECT_SOURCES
-        main.cpp
+project(lab_7
+    LANGUAGES CXX
 )
 
-set(PROJECT_HEADERS
-        mylibs/vector.h
-        mylibs/set.h
-)
-
-add_executable(lab_5
-        ${PROJECT_SOURCES}
-        ${PROJECT_HEADERS}
-)
+set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(mylibs)
-target_link_libraries(lab_5 myset)
-target_link_libraries(lab_5 myvector)
-
-target_include_directories(lab_5 PRIVATE mylibs)
+add_subdirectory(lab7)

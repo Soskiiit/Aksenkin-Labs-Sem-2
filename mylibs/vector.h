@@ -84,6 +84,10 @@ namespace vector {
             }
             return data[index];
         }
+        
+        size_t getSize() const {
+            return size;
+        }
 
         Vector& operator=(const Vector& other) {
             if (this != &other) {
@@ -103,9 +107,7 @@ namespace vector {
         }
     };
     
-    // Deduction guides for string literals
     Vector(const char*) -> Vector<const char*>;
     
-    // Type alias for string vectors
     using StringVector = Vector<const char*>;
 }
